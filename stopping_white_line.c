@@ -5,12 +5,20 @@
 
 void pivot_turn(float degrees);
 void swing_turn(float degrees);
-void foward(float revolutions);
+void forward(float revolutions);
 void forward_cm(float cm);
 
-task main()
-{
-	forward_cm(78);
+task main() {
+	while (true) {
+		swing_turn(3);
+		if (SensorValue(light) <= 48) {
+			swing_turn(-3);
+		}
+		swing_turn(-3);
+		if (SensorValue(light) <= 48) {
+			swing_turn(3);
+		}
+	}
 }
 
 void pivot_turn(float degrees) {
@@ -34,7 +42,7 @@ void swing_turn(float degrees) {
 		nMotorEncoder[motorB] = 0;
 		nMotorEncoderTarget[motorB] = 2 * 360 * (degrees/180);
 
-		motor[motorB] = 30;
+		motor[motorB] = 10;
 		while(nMotorRunState[motorB] != runStateIdle) {}
 
 		motor[motorB] = 0;
