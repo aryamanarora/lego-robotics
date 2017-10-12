@@ -4,19 +4,16 @@
 // 48 threshold
 
 void pivot_turn(float degrees);
-void swing_turn(float degrees);
 void forward(float revolutions);
 void forward_cm(float cm);
+void set_motors(int b, int c);
 
 task main() {
+	int threshold = 48;
 	while (true) {
-		swing_turn(3);
-		if (SensorValue(light) <= 48) {
-			swing_turn(-3);
-		}
-		swing_turn(-3);
-		if (SensorValue(light) <= 48) {
-			swing_turn(3);
+		set_motors(20, 30);
+		while (SensorValue(light) > threshold) {
+			set_motors(30, 20);
 		}
 	}
 }
@@ -27,35 +24,12 @@ void pivot_turn(float degrees) {
 
 	nMotorEncoder[motorB] = 0;
 	nMotorEncoderTarget[motorB] = 360 * (degrees/180);
-	motor[motorB] = (degrees >= 0) ? 30 : -30;
+	motor[motorB] = (degrees >= 0) ? 10 : -10;
 
 	while(nMotorRunState[motorB] != runStateIdle) {}
 
 	nSyncedMotors = synchNone;
 	motor[motorB] = 0;
-}
-
-void swing_turn(float degrees) {
-	nSyncedMotors = synchNone;
-
-	if (degrees >= 0) {
-		nMotorEncoder[motorB] = 0;
-		nMotorEncoderTarget[motorB] = 2 * 360 * (degrees/180);
-
-		motor[motorB] = 10;
-		while(nMotorRunState[motorB] != runStateIdle) {}
-
-		motor[motorB] = 0;
-	}
-	else {
-		nMotorEncoder[motorC] = 0;
-		nMotorEncoderTarget[motorC] = 2 * 360 * (degrees/180);
-
-		motor[motorC] = 10;
-		while(nMotorRunState[motorC] != runStateIdle) {}
-
-		motor[motorC] = 0;
-	}
 }
 
 void forward(float revolutions) {
@@ -64,11 +38,16 @@ void forward(float revolutions) {
 	nMotorEncoderTarget[motorB] = revolutions * 360;
 
 	nSyncedTurnRatio = 100;
-	motor[motorB] = (revolutions > 0) ? 50 : -50;
+	motor[motorB] = (revolutions > 0) ? 20 : -20;
 
 	while(nMotorRunState[motorB] != runStateIdle) {}
 }
 
 void forward_cm(float cm) {
 	forward((5 * (cm / 90)) * 100/98);
+}
+
+void set_motors(int b, int c) {
+	motor[motorB] = b;
+	motor[motorC] = c;
 }
