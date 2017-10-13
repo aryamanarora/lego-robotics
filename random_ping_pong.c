@@ -10,14 +10,25 @@ void forward_cm(float cm);
 task main()
 {
 	int threshold = 48;
-	while (SensorValue(light) <= threshold) {
+	int white_touches = 0;
+	while (white_touches < 5) {
 		nSyncedMotors = synchBC;
 		nSyncedTurnRatio = 100;
-		while (SensorValue[touch] == 0 && SensorValue(light) <= threshold) {
+		while (SensorValue(touch) == 0 && SensorValue(light) <= threshold) {
 			motor[motorB] = 50;
 		}
-		motor[motorB] = 0;
-		if (SensorValue(touch) == 1) {
+		if (SensorValue(touch) == 0) {
+
+			motor[motorB] = 0;
+			if (SensorValue(light) <= threshold) {
+				white_touches++;
+			}
+
+			motor[motorB] = 20;
+			while (SensorValue(light) <= threshold) {}
+		}
+		else {
+			motor[motorB] = 0;
 			forward_cm(-7);
 			wait1Msec(500);
 
