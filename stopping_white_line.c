@@ -11,9 +11,9 @@ void set_motors(int b, int c);
 task main() {
 	int threshold = 48;
 	while (true) {
-		set_motors(30, 90);
+		set_motors(10, 40);
 		while (SensorValue(light) > threshold) {
-			set_motors(90, 30);
+			set_motors(40, 10);
 		}
 	}
 }
