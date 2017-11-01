@@ -7,10 +7,11 @@ void pivot_turn(float degrees);
 void swing_turn(float degrees);
 void forward(float revolutions);
 void forward_cm(float cm);
+void set_motors(int b, int c, bool sync);
 
 task main()
 {
-	forward_cm(78);
+	// wo
 }
 
 void pivot_turn(float degrees) {
@@ -63,4 +64,16 @@ void forward(float revolutions) {
 
 void forward_cm(float cm) {
 	forward((5 * (cm / 90)) * 100/98);
+}
+
+void set_motors(int b, int c) {
+	if (b == c) {
+		nSyncedMotors = synchBC;
+		nSyncedTurnRatio = 100;
+		motor[motorB] = b;
+	}
+	else {
+		motor[motorB] = b;
+		motor[motorC] = c;
+	}
 }
