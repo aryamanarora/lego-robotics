@@ -4,14 +4,16 @@
 // 48 threshold
 
 int check_student(void);
+void next_row(void);
 void pivot_turn(float degrees);
 void forward(float revolutions);
 void forward_cm(float cm);
 void set_motors(int b, int c);
 
+const int threshold = 48;
+
 task main()
 {
-	int threshold = 48;
 	int count = 0;
 
 	// get to the first row
@@ -24,48 +26,38 @@ task main()
 	// check first row
 	count = count + check_student();
 
-	forward_cm(30);
-	pivot_turn(-90);
-
-	while (SensorValue(light) <= threshold) {
-		set_motors(30, 30);
-	}
-	while (SensorValue(light) >= threshold) {
-		set_motors(30, 30);
-	}
-	while (SensorValue(light) <= threshold) {
-		set_motors(30, 30);
-	}
-	set_motors(0, 0);
-	pivot_turn(90);
-
+	next_row();
 	count = count + check_student();
 
-	forward_cm(30);
-	pivot_turn(-90);
+	next_row();
+	count = count + check_student();
 
-	while (SensorValue(light) <= threshold) {
-		set_motors(30, 30);
-	}
-	while (SensorValue(light) >= threshold) {
-		set_motors(30, 30);
-	}
-	while (SensorValue(light) <= threshold) {
-		set_motors(30, 30);
+	// get back
+	forward_cm(20);
+	pivot_turn(90);
+	for (int i = 0; i < 3; i++) {
+		while (SensorValue(light) <= threshold) {
+			set_motors(30, 30);
+		}
+		while (SensorValue(light) >= threshold) {
+			set_motors(30, 30);
+		}
 	}
 	set_motors(0, 0);
-	pivot_turn(90);
-
-	count = count + check_student();
 
 	nxtDisplayBigTextLine(2, "%d", count);
+	nVolume = 5;
+	for (int i = 0; i < count; i++) {
+		playSound(soundShortBlip);
+		wait1Msec(500);
+		clearSounds();
+	}
 	wait1Msec(60000);
 }
 
 int check_student(void) {
 	int students = 0;
 	int count = 0;
-	int threshold = 48;
 	int lines = 2;
 	while (SensorValue(touch) == 0 && count < lines) {
 		set_motors(30, 30);
@@ -79,9 +71,14 @@ int check_student(void) {
 	if (SensorValue(touch) == 1) {
 		students++;
 	}
+	set_motors(0, 0);
+	wait1Msec(200);
+	forward_cm(-4);
+	wait1Msec(200);
 	pivot_turn(180);
+	wait1Msec(200);
 
-	lines = 3;
+	lines = (students == 1) ? 2 : 3;
 	count = 0;
 	while (SensorValue(touch) == 0 && count < lines) {
 		set_motors(30, 30);
@@ -95,8 +92,32 @@ int check_student(void) {
 	if (SensorValue(touch) == 1) {
 		students++;
 	}
+	set_motors(0, 0);
+	wait1Msec(200);
+	forward_cm(-4);
+	wait1Msec(200);
 	pivot_turn(180);
+	wait1Msec(200);
 	return students;
+}
+
+void next_row(void) {
+	forward_cm(30);
+	pivot_turn(-90);
+	forward_cm(-5);
+	while (SensorValue(light) <= threshold) {
+		set_motors(30, 30);
+	}
+	while (SensorValue(light) >= threshold) {
+		set_motors(30, 30);
+	}
+	while (SensorValue(light) <= threshold) {
+		set_motors(30, 30);
+	}
+	set_motors(0, 0);
+	wait1Msec(200);
+	pivot_turn(90);
+	wait1Msec(200);
 }
 
 
@@ -105,7 +126,7 @@ void pivot_turn(float degrees) {
 	nSyncedTurnRatio = -100;
 
 	nMotorEncoder[motorB] = 0;
-	nMotorEncoderTarget[motorB] = 360 * (degrees/180);
+	nMotorEncoderTarget[motorB] = 350 * (degrees/180);
 	motor[motorB] = (degrees >= 0) ? 30 : -30;
 
 	while(nMotorRunState[motorB] != runStateIdle) {}
@@ -113,7 +134,7 @@ void pivot_turn(float degrees) {
 	nSyncedMotors = synchNone;
 	motor[motorB] = 0;
 
-	wait1Msec(100);
+	wait1Msec(300);
 }
 
 void forward(float revolutions) {
