@@ -9,11 +9,14 @@ void pivot_turn(float degrees);
 void swing_turn(float degrees);
 void forward(float revolutions);
 void forward_cm(float cm);
-void set_motors(int b, int c, bool sync);
+void set_motors(int b, int c);
 
 task main()
 {
-	// wo
+	set_motors(50, 50);
+	while (true) {
+		if (SensorValue(sonar) <
+	}
 }
 
 void pivot_turn(float degrees) {
@@ -69,13 +72,6 @@ void forward_cm(float cm) {
 }
 
 void set_motors(int b, int c) {
-	if (b == c) {
-		nSyncedMotors = synchBC;
-		nSyncedTurnRatio = 100;
-		motor[motorB] = b;
-	}
-	else {
-		motor[motorB] = b;
-		motor[motorC] = c;
-	}
+	motor[motorB] = b;
+	motor[motorC] = c;
 }
